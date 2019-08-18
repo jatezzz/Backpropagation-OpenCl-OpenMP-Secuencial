@@ -1,0 +1,5 @@
+﻿  backpropagation_v2_openmp.cpp
+c:\users\jatez\desktop\proyecto_curso3825_carchi_trujillo_código\backp_secuecnial\backpropagation_v2_openmp\backpropagation_v2_openmp.cpp(58): warning C4013: 'time' sin definir; se supone que extern devuelve como resultado int
+c:\users\jatez\desktop\proyecto_curso3825_carchi_trujillo_código\backp_secuecnial\backpropagation_v2_openmp\backpropagation_v2_openmp.cpp(34): warning C4101: 'buffer': variable local sin referencia
+  backpropagation_v2_openmp.vcxproj -> C:\Users\jatez\Desktop\Proyecto_Curso3825_Carchi_Trujillo_Código\BackP_secuecnial\backpropagation_v2_openmp\Debug\backpropagation_v2_openmp.exe
+  backpropagation_v2_openmp.vcxproj -> C:\Users\jatez\Desktop\Proyecto_Curso3825_Carchi_Trujillo_Código\BackP_secuecnial\backpropagation_v2_openmp\Debug\backpropagation_v2_openmp.pdb (Full PDB)
