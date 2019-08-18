@@ -20,7 +20,7 @@
 #define InputN 9		// number of neurons in the input layer
 #define HN 40			// number of neurons in the hidden layer
 #define OutN 1			// number of neurons in the output layer
-#define datanum 80		// number of training samples
+#define datanum 91		// number of training samples
 
 void main() {
 	double	starttime,
@@ -30,7 +30,6 @@ void main() {
 
 	double sigmoid(double);
 	char result[16] = "";
-	//CString result = "";
 	char buffer[200];
 	double x_out[InputN];		// input layer
 	double hn_out[HN];			// hidden layer
@@ -45,10 +44,10 @@ void main() {
 	double hn_delta[HN];		// delta of hidden layer
 	double y_delta[OutN];		// delta of output layer
 	double error;
-	double errlimit = 0.002;
+	double errlimit = 0.001;
 	double alpha = 0.1, beta = 0.1;
 	int loop = 0;
-	int times = 5000;
+	int times = 50000;
 	int i, j, m;
 	double max, min;
 	double sumtemp;
@@ -83,7 +82,6 @@ void main() {
 	for (m = 0; m<datanum; m++) {
 		for (i = 0; i < InputN; i++) {
 			data[m].input[i] = (double)entradas[i][m];
-			//printf("data[%d].input[%d]: %f\t%f\n", m, i, data[m].input[i],(double)entradas[i][m]);
 		}
 		for (i = 0; i < OutN; i++) {
 			data[m].teach[i] = (double)salidas[m];
@@ -94,22 +92,20 @@ void main() {
 	// Initializition
 	for (i = 0; i<InputN; i++) {
 		for (j = 0; j<HN; j++) {
-			w[i][j] = ((double)rand() / 32767.0) * 2 - 1;//-0.705008; //((double)rand() / 32767.0) * 2 - 1;
+			w[i][j] = ((double)rand() / 32767.0) * 2 - 1;
 			deltaw[i][j] = 0;
 		}
 	}
 	for (i = 0; i<HN; i++) {
 		for (j = 0; j<OutN; j++) {
-			v[i][j] = ((double)rand() / 32767.0) * 2 - 1; //-0.705008; //((double)rand() / 32767.0) * 2 - 1;
+			v[i][j] = ((double)rand() / 32767.0) * 2 - 1;
 			deltav[i][j] = 0;
 		}
 	}
 	// Training
 	starttime = omp_get_wtime();
-	//for (loop = 0; loop<200; loop++) {
 	while (loop < times) {
 		loop++;
-		//loop++;
 		error = 0.0;
 
 		for (m = 0; m<datanum; m++) {
@@ -119,10 +115,6 @@ void main() {
 			min = -1;
 			for (i = 0; i<InputN; i++) {
 				x_out[i] = data[m].input[i];
-				/*if (max < x_out[i])
-				max = x_out[i];
-				if (min > x_out[i])
-				min = x_out[i];*/
 
 			}
 			if ((max - min)>0) {
@@ -151,7 +143,6 @@ void main() {
 			// Backpropagation
 			for (i = 0; i<OutN; i++) {
 				errtemp = y[i] - y_out[i];
-				//printf("errtemp %f = y[i] %f - y_out[i]%f\n", errtemp,y[i],y_out[i]);
 
 				y_delta[i] = -errtemp * sigmoid(y_out[i]) * (1.0 - sigmoid(y_out[i]));
 
@@ -194,8 +185,7 @@ void main() {
 		if (error < errlimit)
 			break;
 
-		//printf("The %d th training, error: %f\n", loop, error);
-		//printf("%d  %f\n", loop, error);
+		printf("The %d th training, error: %f\n", loop, error);
 	}
 	stoptime = omp_get_wtime();
 
@@ -233,38 +223,124 @@ void main() {
 		y_out[i] = sigmoid(sumtemp);
 		printf("\nResultado a la entrada %i= %f\n", i, y_out[i] * 9);
 	}
+	//Impresión de tablero
+	printf("\tTIC TAC TOE\n");
+	printf("\t___|___|___\n");
+	printf("\t___|_O_|___\n");
+	printf("\t   |   |   \n");
+	entradas[5 - 1][0] = 1;
+	loop = 0;
+	int pos = 0;
+	char simbolos[] = ".........";
+	while (loop < 6) {
+		loop++;
+		printf("Ingresa proxima posición[1-4]U[6-9] : ");
+		do { scanf("%d", &pos); } while (pos == 5);
+		entradas[pos-1][0] = -1;
+		//Impresión
+		for (i = 0; i < 9; i++) {
+			if (entradas[i][0] == 0) {
+				simbolos[i] = '.';
+			}
+			else if (entradas[i][0] == -1) {
+				simbolos[i] = 'X';
+			}
+			else if (entradas[i][0] == 1) {
+				simbolos[i] = 'O';
+			}
+		}
+		printf("\t_%c_|_%c_|_%c_\n", simbolos[0], simbolos[1], simbolos[2]);
+		printf("\t_%c_|_%c_|_%c_\n", simbolos[3], simbolos[4], simbolos[5]);
+		printf("\t %c | %c | %c \n", simbolos[6], simbolos[7], simbolos[8]);
 
-	printf("Ingresa 9 valores: ");
-	scanf("%d %d %d %d %d %d %d %d %d", &entradas[0][0], &entradas[1][0], &entradas[2][0], &entradas[3][0], &entradas[4][0], &entradas[5][0], &entradas[6][0], &entradas[7][0], &entradas[8][0]);
-	printf("Ingresaste: %d %d %d %d %d %d %d %d %d\n", entradas[0][0], entradas[1][0], entradas[2][0], entradas[3][0], entradas[4][0], entradas[5][0], entradas[6][0], entradas[7][0], entradas[8][0]);
+		//Test Feedforward
+		max = 1;
+		min = -1;
+		for (i = 0; i<InputN; i++) {
+			x_out[i] = entradas[i][0];
+			if (max < x_out[i])
+				max = x_out[i];
+			if (min > x_out[i])
+				min = x_out[i];
+		}
+		for (i = 0; i<InputN; i++) {
+			x_out[i] = (x_out[i] - min) / (max - min);
+		}
 
-	//Test Feedforward
-	max = 1;
-	min = -1;
-	for (i = 0; i<InputN; i++) {
-		x_out[i] = entradas[i][0];
-		if (max < x_out[i])
-			max = x_out[i];
-		if (min > x_out[i])
-			min = x_out[i];
-	}
-	for (i = 0; i<InputN; i++) {
-		x_out[i] = (x_out[i] - min) / (max - min);
-	}
-
-	for (int i = 0; i < HN; i++) {
-		sumtemp = 0.0;
-		for (j = 0; j < InputN; j++)
-			sumtemp += w[j][i] * x_out[j];
-		hn_out[i] = sigmoid(sumtemp);		// sigmoid serves as the activation function
-	}
-	for (i = 0; i<OutN; i++) {
-		sumtemp = 0.0;
-		for (j = 0; j<HN; j++)
-			sumtemp += v[j][i] * hn_out[j];
-		y_out[i] = sigmoid(sumtemp);
-		printf("Salida Real %i= %f\n", i, y_out[i] * 9);
-		printf("Salida Ajustada %i= %f\n", i, round(y_out[i] * 9));
+		for (int i = 0; i < HN; i++) {
+			sumtemp = 0.0;
+			for (j = 0; j < InputN; j++)
+				sumtemp += w[j][i] * x_out[j];
+			hn_out[i] = sigmoid(sumtemp);		// sigmoid serves as the activation function
+		}
+		for (i = 0; i<OutN; i++) {
+			sumtemp = 0.0;
+			for (j = 0; j<HN; j++)
+				sumtemp += v[j][i] * hn_out[j];
+			y_out[i] = sigmoid(sumtemp);
+			printf("Salida Real %i= %f\n", i, y_out[i] * 9);
+			printf("Salida Ajustada %i= %f\n", i, round(y_out[i] * 9));
+		}
+		int pos_m = round(y_out[0] * 9);
+		
+		entradas[pos_m - 1][0] = 1;
+		printf("Respuesta: %d,%d\n", pos_m,entradas[pos_m - 1][0]);
+	
+		//Impresión
+		for (i = 0; i < 9; i++) {
+			if (entradas[i][0] == 0) {
+				simbolos[i] = '.';
+			}
+			else if (entradas[i][0] == -1) {
+				simbolos[i] = 'X';
+			}
+			else if (entradas[i][0] == 1) {
+				simbolos[i] = 'O';
+			}
+		}
+		printf("\t_%c_|_%c_|_%c_\n", simbolos[0], simbolos[1], simbolos[2]);
+		printf("\t_%c_|_%c_|_%c_\n", simbolos[3], simbolos[4], simbolos[5]);
+		printf("\t %c | %c | %c \n", simbolos[6], simbolos[7], simbolos[8]);
+		if ((entradas[6][0] == 1 & entradas[4][0] == 1 & entradas[2][0] == 1)|| (entradas[8][0] == 1 & entradas[4][0] == 1 & entradas[0][0] == 1) || (entradas[1][0] == 1 & entradas[4][0] == 1 & entradas[7][0] == 1) || (entradas[3][0] == 1 & entradas[4][0] == 1 & entradas[5][0] == 1) || (entradas[0][0] == 1 & entradas[1][0] == 1 & entradas[2][0] == 1) || (entradas[0][0] == 1 & entradas[3][0] == 1 & entradas[6][0] == 1) || (entradas[2][0] == 1 & entradas[5][0] == 1 & entradas[8][0] == 1) || (entradas[6][0] == 1 & entradas[7][0] == 1 & entradas[8][0] == 1)) {
+			printf("\t-------------------¡Gano!--------------------- \n");
+			scanf("%d", &pos);
+			if (pos == 0) {
+				for (i = 0; i < 9; i++) {
+					entradas[i][0] = 0;
+				}
+				//Impresión de tablero
+				printf("\tTIC TAC TOE\n");
+				printf("\t_._|_._|_._\n");
+				printf("\t_._|_O_|_._\n");
+				printf("\t . | . | . \n");
+				entradas[5 - 1][0] = 1;
+				loop = 0;
+				int pos = 0;
+			}
+			else {
+				break;
+			}
+			
+		}else if(pos_m==0){
+			printf("\t-------------------¡Nadie Gana!--------------------- \n");
+			scanf("%d", &pos);
+			if (pos == 0) {
+				for (i = 0; i < 9; i++) {
+					entradas[i][0] = 0;
+				}
+				//Impresión de tablero
+				printf("\tTIC TAC TOE\n");
+				printf("\t_._|_._|_._\n");
+				printf("\t_._|_O_|_._\n");
+				printf("\t . | . | . \n");
+				entradas[5 - 1][0] = 1;
+				loop = 0;
+				int pos = 0;
+			}
+			else {
+				break;
+			}
+		}
 	}
 }
 
