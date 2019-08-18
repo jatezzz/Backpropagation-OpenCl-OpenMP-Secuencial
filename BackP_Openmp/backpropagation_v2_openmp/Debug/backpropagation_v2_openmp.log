@@ -1,0 +1,5 @@
+﻿  backpropagation_v2_openmp.cpp
+c:\users\jatez\documents\visual studio 2015\projects\backpropagation_v2_openmp\backpropagation_v2_openmp\backpropagation_v2_openmp.cpp(58): warning C4013: 'time' sin definir; se supone que extern devuelve como resultado int
+c:\users\jatez\documents\visual studio 2015\projects\backpropagation_v2_openmp\backpropagation_v2_openmp\backpropagation_v2_openmp.cpp(34): warning C4101: 'buffer': variable local sin referencia
+  backpropagation_v2_openmp.vcxproj -> C:\Users\jatez\Documents\Visual Studio 2015\Projects\backpropagation_v2_openmp\backpropagation_v2_openmp\Debug\backpropagation_v2_openmp.exe
+  backpropagation_v2_openmp.vcxproj -> C:\Users\jatez\Documents\Visual Studio 2015\Projects\backpropagation_v2_openmp\backpropagation_v2_openmp\Debug\backpropagation_v2_openmp.pdb (Full PDB)
